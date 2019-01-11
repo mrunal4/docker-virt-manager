@@ -1,0 +1,30 @@
+# Ensure that your host can accept X forwarded connections
+# xhost +
+# 
+# OR
+#
+# permits the root user on the local machine to connect to X windows display.
+# xhost local:root
+
+# Docker run command
+# xhost +  &&  docker run -it  -v /tmp/.X11-unix:/tmp/.X11-unix   -e DISPLAY=unix:0.0   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro mru/mbentley/virt-manager
+#
+# For Ubuntu 18.04 (Tested) : 
+# xhost +  &&  docker run -it  -v /tmp/.X11-unix:/tmp/.X11-unix   -e DISPLAY=unix:0.0   -v ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro mru/mbentley/virt-manager
+
+version: "3.7"
+services:
+  virt-manager:
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+      # args:
+      #   buildno: 1
+    image: mru/mbentley/virt-manager
+    container_name: virt-manager
+    volumes:
+     - /tmp/.X11-unix:/tmp/.X11-unix # to access .X11-unix 
+     - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro # read-only access to ssh private key
+    environment:
+     - DISPLAY=unix$DISPLAY # Pass DISPLAY value in it
+    #  - DISPLAY=unix:0.0 # Ubuntu 18.04 0.0 works. Tested
